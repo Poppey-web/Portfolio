@@ -30,7 +30,7 @@ import {
 
 // --- Types ---
 
-type Category = 'Tous' | 'Festivals' | 'Corporate' | 'Sport' | 'Logistique';
+type Category = string;
 
 interface Project {
   id: string;
@@ -60,6 +60,7 @@ interface PortfolioData {
       statValue: string;
       statLabel: string;
     };
+    projectsSubtitle: string;
     contact: {
       email: string;
       linkedin: string;
@@ -101,9 +102,10 @@ const INITIAL_DATA: PortfolioData = {
       statValue: "120+",
       statLabel: "Événements pilotés"
     },
+    projectsSubtitle: "Sélection de réalisations // 2023-2026",
     contact: {
       email: "contact@example.com",
-      linkedin: "#",
+      linkedin: "https://www.linkedin.com/in/nils-cattiaux-truelle-b37964187/",
       cvUrl: "#"
     }
   },
@@ -228,14 +230,16 @@ const InlineEdit = ({
         onFocus={() => setIsFocused(true)}
         onBlur={(e) => {
           setIsFocused(false);
-          let newVal = e.currentTarget.innerText.trim();
-          if (newVal === "") {
+          let newVal = e.currentTarget.innerText; // Keep original formatting
+          if (newVal.trim() === "") {
             newVal = value || "Cliquez ici pour ajouter du contenu";
             e.currentTarget.innerText = newVal;
           }
           onChange(newVal);
         }}
         className={`outline-none transition-all min-w-[20px] inline-block w-full break-words cursor-text ${
+          multiline ? 'whitespace-pre-wrap leading-relaxed' : ''
+        } ${
           isFocused 
             ? 'border-blue-500 ring-4 ring-blue-500/20 bg-blue-500/5 border-solid' 
             : isModified
@@ -358,7 +362,7 @@ const ProjectModal = ({
                   label="Votre rôle"
                 />
               </div>
-              <div className="text-zinc-300 text-base md:text-lg leading-relaxed mb-8">
+              <div className="text-zinc-300 text-base md:text-lg leading-relaxed mb-8 whitespace-pre-wrap">
                 <InlineEdit 
                   value={project.description} 
                   originalValue={originalProject?.description}
@@ -483,7 +487,13 @@ export default function App() {
     return data.projects.filter(p => p.category === filter);
   }, [filter, data.projects]);
 
-  const categories: Category[] = ['Tous', 'Festivals', 'Corporate', 'Sport', 'Logistique'];
+  const categories = useMemo(() => {
+    const base = ['Tous'];
+    const projectCats = Array.from(new Set(data.projects.map(p => p.category)));
+    // Sort project categories alphabetically, but keep 'Tous' first
+    const sortedCats = projectCats.filter(c => c !== 'Tous').sort();
+    return [...base, ...sortedCats];
+  }, [data.projects]);
 
   // Actions
   const handleAdminLogin = (e: React.FormEvent) => {
@@ -814,7 +824,15 @@ export default function App() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-8">
           <div>
             <h2 className="text-4xl sm:text-6xl font-bold tracking-tighter mb-4 text-white uppercase">PROJETS</h2>
-            <p className="text-zinc-400 text-[10px] font-mono uppercase tracking-widest font-bold">Sélection de réalisations // 2023-2024</p>
+            <div className="text-zinc-400 text-[10px] font-mono uppercase tracking-widest font-bold">
+              <InlineEdit 
+                value={data.profile.projectsSubtitle} 
+                originalValue={lastSavedData.profile.projectsSubtitle}
+                onChange={(v) => updateProfile('profile.projectsSubtitle', v)} 
+                isEditMode={isEditMode} 
+                label="Sous-titre section projets"
+              />
+            </div>
           </div>
           
           <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2 md:pb-0 w-full md:w-auto">
@@ -1036,7 +1054,7 @@ export default function App() {
           <a href={`mailto:${data.profile.contact.email}`} className={UI_STYLES.buttonPrimary}>
             Envoyer un Email
           </a>
-          <a href={data.profile.contact.linkedin} className={UI_STYLES.buttonSecondary}>
+          <a href={data.profile.contact.linkedin} target="_blank" rel="noopener noreferrer" className={UI_STYLES.buttonSecondary}>
             LinkedIn
           </a>
         </div>
@@ -1088,16 +1106,22 @@ export default function App() {
                     />
                   </div>
                   <div>
-                    <label className={UI_STYLES.label}>Catégorie</label>
-                    <select 
-                      value={newProjectData.category}
-                      onChange={(e) => setNewProjectData({ ...newProjectData, category: e.target.value as Category })}
-                      className={UI_STYLES.inputField}
-                    >
-                      {categories.filter(c => c !== 'Tous').map(cat => (
-                        <option key={cat} value={cat}>{cat}</option>
-                      ))}
-                    </select>
+                    <label className={UI_STYLES.label}>Catégorie (Existant ou Nouveau)</label>
+                    <div className="relative">
+                      <input 
+                        list="categories-list"
+                        required
+                        value={newProjectData.category}
+                        onChange={(e) => setNewProjectData({ ...newProjectData, category: e.target.value })}
+                        className={UI_STYLES.inputField}
+                        placeholder="Tapez ou sélectionnez..."
+                      />
+                      <datalist id="categories-list">
+                        {categories.filter(c => c !== 'Tous').map(cat => (
+                          <option key={cat} value={cat} />
+                        ))}
+                      </datalist>
+                    </div>
                   </div>
                   <div>
                     <label className={UI_STYLES.label}>URL de l'image</label>
