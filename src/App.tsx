@@ -76,31 +76,31 @@ const INITIAL_DATA: PortfolioData = {
   profile: {
     name: "PRODUCTION SHOWCASE",
     role: "Expert Production Manager",
-    heroTitle: "L'ART DE LA LOGISTIQUE.",
-    heroSubtitle: "Conception, planification et exécution technique pour des événements d'envergure. Je transforme la complexité en systèmes fluides.",
-    bioTitle: "FIABILITÉ & MATURITÉ.",
+    heroTitle: "PILOTAGE DE PRODUCTION ÉVÉNEMENTIELLE.",
+    heroSubtitle: "Expertise technique et rigueur opérationnelle pour projets complexes. Orienté résultats, je transforme les contraintes logistiques en succès d'exécution.",
+    bioTitle: "FIABILITÉ & VISION LONG TERME.",
     bioText: [
-      "Ma capacité à gérer des budgets complexes et des équipes pluridisciplinaires repose sur une rigueur personnelle constante. Au-delà de l'événementiel, je pilote activement mes propres actifs (Bourse, Immobilier), une discipline qui renforce ma compréhension des enjeux financiers et de la gestion des risques.",
-      "Cette maturité de gestionnaire est mon plus grand atout sur le terrain : calme sous la pression, précision dans l'exécution et transparence totale vis-à-vis des parties prenantes."
+      "Junior à haut potentiel, j'ai été formé à l'excellence opérationnelle sous le mentorat d'Ambroise Soulé et Maxime Hernandez. Mon parcours est marqué par une expérience terrain significative à l'international, notamment au Melbourne Convention Center, où j'ai appris à naviguer dans des environnements techniques exigeants.",
+      "Ma quête de liberté financière n'est pas qu'un objectif personnel, c'est la preuve de ma discipline et de ma vision stratégique. Je pilote activement mes investissements (Bourse, Immobilier), une rigueur que je transpose directement dans la gestion de budgets événementiels et la mitigation des risques. Calme sous la pression, je garantis une exécution sans faille."
     ],
     professionalEngagement: [
       { label: "Disponibilité", value: "Europe / International" },
-      { label: "Langues", value: "FR / EN / ES" },
-      { label: "Logiciels", value: "CAD / ERP / Project" }
+      { label: "Formation", value: "Mentorat Soulé & Hernandez" },
+      { label: "Terrain", value: "Melbourne Convention Center" }
     ],
     expertise: {
-      title: "EXPERTISE MÉTIER.",
-      description: "Une approche rigoureuse basée sur l'ingénierie des flux et la maîtrise budgétaire. Chaque événement est traité comme un système complexe à optimiser.",
+      title: "RIGUEUR TECHNIQUE.",
+      description: "Une approche pragmatique de la production, centrée sur l'optimisation des ressources et la sécurité des flux. Pas de place pour l'improvisation.",
       skills: [
-        { label: "Régie Générale" },
-        { label: "Planification de flux" },
-        { label: "Gestion de budgets" },
-        { label: "Gestion des risques" },
-        { label: "Pilotage prestataires" },
-        { label: "Analyse ROI" }
+        { label: "Crisis Management" },
+        { label: "Budget Oversight" },
+        { label: "Technical Rigor" },
+        { label: "Risk Mitigation" },
+        { label: "Stakeholder Management" },
+        { label: "Operational Excellence" }
       ],
-      statValue: "120+",
-      statLabel: "Événements pilotés"
+      statValue: "10k m²",
+      statLabel: "Surface max pilotée"
     },
     projectsSubtitle: "Sélection de réalisations // 2023-2026",
     contact: {
@@ -112,14 +112,25 @@ const INITIAL_DATA: PortfolioData = {
   projects: [
     {
       id: '1',
-      title: 'Electronic Horizon Festival',
-      category: 'Festivals',
-      image: 'https://picsum.photos/seed/festival1/1200/800',
-      description: 'Régie générale et coordination technique pour un festival de 3 jours.',
-      role: 'Directeur Technique',
-      kpis: { jauge: '15k/jour', budget: 'Confidentiel', staff: '45' },
+      title: 'Planit Installation',
+      category: 'Exposition',
+      image: 'https://picsum.photos/seed/planit/1200/800',
+      description: 'Coordination logistique et montage technique pour un showroom industriel de 10 000 m². Gestion de la coactivité entre 15 prestataires simultanés.',
+      role: 'Responsable Logistique & Montage',
+      kpis: { jauge: '7000+ Visiteurs', budget: 'Optimisé -10%', staff: '25 Techniciens' },
+      year: '2025',
+      location: 'Melbourne, Australie'
+    },
+    {
+      id: '2',
+      title: 'Némésis',
+      category: 'Grand Public',
+      image: 'https://picsum.photos/seed/nemesis/1200/800',
+      description: 'Régie générale et ingénierie des flux pour un événement à forte affluence. Mise en place d\'un plan de sécurité civile et coordination des secours.',
+      role: 'Régisseur Général',
+      kpis: { jauge: '7000+ Personnes', budget: 'Budget Oversight', staff: '40 Staff' },
       year: '2024',
-      location: 'Lyon, France'
+      location: 'France'
     }
   ]
 };
@@ -850,29 +861,54 @@ export default function App() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <AnimatePresence mode="popLayout">
             {filteredProjects.map((project) => (
               <motion.div
                 layout
                 key={project.id}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="group relative aspect-[4/3] bg-zinc-900 border border-zinc-800 overflow-hidden cursor-pointer rounded-sm"
+                className="group relative bg-zinc-950 border border-zinc-900 overflow-hidden cursor-pointer rounded-sm hover:border-zinc-700 transition-all duration-500"
                 onClick={() => setSelectedProject(project)}
               >
-                <SafeImage 
-                  src={project.image} 
-                  alt={project.title} 
-                  className="w-full h-full object-cover opacity-50 group-hover:opacity-80 group-hover:scale-105 transition-all duration-700" 
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent p-6 sm:p-8 flex flex-col justify-end">
-                  <div className="text-zinc-400 text-[9px] font-mono uppercase tracking-widest mb-2 font-bold">{project.category}</div>
-                  <h3 className="text-2xl font-bold tracking-tighter mb-2 text-white uppercase line-clamp-2">{project.title}</h3>
-                  <div className="flex items-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-white">Détails</span>
-                    <ChevronRight size={12} className="text-white" />
+                <div className="aspect-[16/9] overflow-hidden relative">
+                  <SafeImage 
+                    src={project.image} 
+                    alt={project.title} 
+                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" 
+                  />
+                  <div className="absolute top-4 left-4">
+                    <div className="px-3 py-1 bg-black/80 backdrop-blur-md border border-zinc-800 text-[8px] font-bold uppercase tracking-[0.2em] text-white">
+                      {project.category}
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="p-8">
+                  <div className="flex justify-between items-start mb-4">
+                    <h3 className="text-2xl font-bold tracking-tighter text-white uppercase group-hover:text-blue-400 transition-colors">{project.title}</h3>
+                    <span className="text-[10px] font-mono text-zinc-600">{project.year}</span>
+                  </div>
+                  
+                  <p className="text-zinc-500 text-sm line-clamp-2 mb-6 font-medium leading-relaxed">
+                    {project.description}
+                  </p>
+
+                  <div className="grid grid-cols-3 gap-4 border-t border-zinc-900 pt-6">
+                    <div>
+                      <div className="text-[8px] uppercase text-zinc-600 font-bold mb-1">Jauge</div>
+                      <div className="text-[10px] text-zinc-300 font-bold">{project.kpis.jauge}</div>
+                    </div>
+                    <div>
+                      <div className="text-[8px] uppercase text-zinc-600 font-bold mb-1">Staff</div>
+                      <div className="text-[10px] text-zinc-300 font-bold">{project.kpis.staff}</div>
+                    </div>
+                    <div>
+                      <div className="text-[8px] uppercase text-zinc-600 font-bold mb-1">Localisation</div>
+                      <div className="text-[10px] text-zinc-300 font-bold truncate">{project.location}</div>
+                    </div>
                   </div>
                 </div>
                 
