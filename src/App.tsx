@@ -60,6 +60,7 @@ interface PortfolioData {
       statValue: string;
       statLabel: string;
     };
+    technicalSkills: { label: string }[];
     projectsSubtitle: string;
     contact: {
       email: string;
@@ -80,8 +81,7 @@ const INITIAL_DATA: PortfolioData = {
     heroSubtitle: "Expertise technique et rigueur opérationnelle pour projets complexes. Orienté résultats, je transforme les contraintes logistiques en succès d'exécution.",
     bioTitle: "FIABILITÉ & VISION LONG TERME.",
     bioText: [
-      "Junior à haut potentiel, j'ai été formé à l'excellence opérationnelle sous le mentorat d'Ambroise Soulé et Maxime Hernandez. Mon parcours est marqué par une expérience terrain significative à l'international, notamment au Melbourne Convention Center, où j'ai appris à naviguer dans des environnements techniques exigeants.",
-      "Ma quête de liberté financière n'est pas qu'un objectif personnel, c'est la preuve de ma discipline et de ma vision stratégique. Je pilote activement mes investissements (Bourse, Immobilier), une rigueur que je transpose directement dans la gestion de budgets événementiels et la mitigation des risques. Calme sous la pression, je garantis une exécution sans faille."
+      "Expert en production événementielle formé par Ambroise Soulé et Maxime Hernandez. Ma rigueur opérationnelle et ma gestion du risque sont forgées par le terrain et une discipline financière stricte (Bourse/Immobilier). Je transforme la complexité logistique en succès d'exécution."
     ],
     professionalEngagement: [
       { label: "Disponibilité", value: "Europe / International" },
@@ -102,9 +102,15 @@ const INITIAL_DATA: PortfolioData = {
       statValue: "10k m²",
       statLabel: "Surface max pilotée"
     },
+    technicalSkills: [
+      { label: "AutoCAD" },
+      { label: "Suite Adobe" },
+      { label: "White Card (AU)" },
+      { label: "RSA (AU)" }
+    ],
     projectsSubtitle: "Sélection de réalisations // 2023-2026",
     contact: {
-      email: "contact@example.com",
+      email: "nilscattiauxtruelle@gmail.com",
       linkedin: "https://www.linkedin.com/in/nils-cattiaux-truelle-b37964187/",
       cvUrl: "#"
     }
@@ -115,7 +121,7 @@ const INITIAL_DATA: PortfolioData = {
       title: 'Planit Installation',
       category: 'Exposition',
       image: 'https://picsum.photos/seed/planit/1200/800',
-      description: 'Coordination logistique et montage technique pour un showroom industriel de 10 000 m². Gestion de la coactivité entre 15 prestataires simultanés.',
+      description: "• Montage de structures 10 000m²+\n• Lecture de plans CAO\n• Sécurité OH&S",
       role: 'Responsable Logistique & Montage',
       kpis: { jauge: '7000+ Visiteurs', budget: 'Optimisé -10%', staff: '25 Techniciens' },
       year: '2025',
@@ -892,7 +898,7 @@ export default function App() {
                     <span className="text-[10px] font-mono text-zinc-600">{project.year}</span>
                   </div>
                   
-                  <p className="text-zinc-500 text-sm line-clamp-2 mb-6 font-medium leading-relaxed">
+                  <p className="text-zinc-500 text-sm mb-6 font-medium leading-relaxed whitespace-pre-wrap">
                     {project.description}
                   </p>
 
@@ -983,6 +989,30 @@ export default function App() {
                   />
                 </div>
               ))}
+            </div>
+
+            {/* Technical Skills Sub-section */}
+            <div className="mt-16 pt-16 border-t border-zinc-900">
+              <div className="text-zinc-500 text-[9px] uppercase tracking-[0.3em] mb-8 font-bold">Compétences Techniques</div>
+              <div className="flex flex-wrap gap-4">
+                {data.profile.technicalSkills.map((skill, idx) => (
+                  <div key={idx} className="px-5 py-3 bg-zinc-900 border border-zinc-800 rounded-sm flex items-center gap-3 group hover:border-blue-500/50 transition-all">
+                    <div className="w-1.5 h-1.5 bg-blue-500 rounded-full group-hover:animate-pulse" />
+                    <InlineEdit 
+                      value={skill.label} 
+                      originalValue={lastSavedData.profile.technicalSkills[idx]?.label}
+                      onChange={(v) => {
+                        const newSkills = [...data.profile.technicalSkills];
+                        newSkills[idx].label = v;
+                        updateProfile('profile.technicalSkills', newSkills);
+                      }} 
+                      isEditMode={isEditMode} 
+                      className="text-[10px] font-bold uppercase tracking-widest text-white"
+                      label="Skill Technique"
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
           <div className="flex items-center justify-center">
@@ -1087,10 +1117,20 @@ export default function App() {
       <section id="contact" className="py-32 sm:py-48 px-4 sm:px-6 text-center border-t border-zinc-900">
         <h2 className="text-6xl sm:text-8xl md:text-9xl font-bold tracking-tighter mb-12 text-white">DISCUTONS.</h2>
         <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-8">
-          <a href={`mailto:${data.profile.contact.email}`} className={UI_STYLES.buttonPrimary}>
+          <a 
+            href={`mailto:${data.profile.contact.email}`} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className={UI_STYLES.buttonPrimary}
+          >
             Envoyer un Email
           </a>
-          <a href={data.profile.contact.linkedin} target="_blank" rel="noopener noreferrer" className={UI_STYLES.buttonSecondary}>
+          <a 
+            href={data.profile.contact.linkedin} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className={UI_STYLES.buttonSecondary}
+          >
             LinkedIn
           </a>
         </div>
