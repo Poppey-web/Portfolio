@@ -82,7 +82,7 @@ const INITIAL_DATA: PortfolioData = {
     heroSubtitle: "Expertise technique et rigueur opérationnelle pour projets complexes. Orienté résultats, je transforme les contraintes logistiques en succès d'exécution.",
     bioTitle: "FIABILITÉ & VISION LONG TERME.",
     bioText: [
-      "Ma rigueur professionnelle, forgée sur le terrain de la production événementielle, trouve un écho direct dans ma vie personnelle à travers la gestion active d'investissements boursiers et immobiliers. Cette discipline m'apporte une vision pragmatique et une gestion du risque affûtée pour chaque projet.",
+      "Ma rigueur professionnelle, forgée sur le terrain de la production événementielle, trouve un écho direct dans ma vie personnelle à travers la gestion active d'investissements boursiers et immobiliers (Bourse/Immobilier). Cette discipline, couplée au mentorat d'Ambroise Soulé et Maxime Hernandez, m'apporte une vision pragmatique et une gestion du risque affûtée pour chaque projet.",
       "Formé par les meilleurs du secteur, je m'attache à transformer la complexité logistique en succès d'exécution, avec une attention constante portée à la sécurité et à l'optimisation des ressources."
     ],
     professionalEngagement: [
@@ -144,6 +144,17 @@ const INITIAL_DATA: PortfolioData = {
       kpis: { jauge: '7000+ Personnes', budget: 'Budget Oversight', staff: '40 Staff' },
       year: '2024',
       location: 'France'
+    },
+    {
+      id: '3',
+      title: 'Spring Break Timevent',
+      category: 'Logistique Étudiante',
+      image: 'https://picsum.photos/seed/timevent/1200/800',
+      description: "Représentant École & Relais Opérationnel. Point de contact stratégique entre l'organisation logistique et les participants (milliers d'étudiants). Gestion des flux, réactivité terrain et coordination des imprévus.",
+      role: 'Représentant École & Relais Opérationnel',
+      kpis: { jauge: 'Milliers d\'étudiants', budget: 'Coordination', staff: 'Relais Terrain' },
+      year: '2023',
+      location: 'Espagne / France'
     }
   ]
 };
@@ -209,6 +220,23 @@ const Toast = ({ message, type, onClose }: { message: string; type: 'success' | 
   );
 };
 
+const HighlightedText = ({ text, className = "" }: { text: string; className?: string }) => {
+  if (!text) return null;
+  const terms = ["AutoCAD", "OH&S", "Melbourne"];
+  const regex = new RegExp(`(${terms.join('|')})`, 'gi');
+  const parts = text.split(regex);
+
+  return (
+    <span className={className}>
+      {parts.map((part, i) => 
+        terms.some(term => term.toLowerCase() === part.toLowerCase()) 
+          ? <span key={i} className="font-black text-white">{part}</span> 
+          : part
+      )}
+    </span>
+  );
+};
+
 const InlineEdit = ({ 
   value, 
   originalValue,
@@ -216,7 +244,8 @@ const InlineEdit = ({
   isEditMode, 
   label,
   className = "", 
-  multiline = false 
+  multiline = false,
+  highlight = false
 }: { 
   value: string; 
   originalValue?: string;
@@ -225,6 +254,7 @@ const InlineEdit = ({
   label?: string;
   className?: string;
   multiline?: boolean;
+  highlight?: boolean;
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -237,7 +267,9 @@ const InlineEdit = ({
     }
   }, [value]);
 
-  if (!isEditMode) return <span className={className}>{value}</span>;
+  if (!isEditMode) {
+    return highlight ? <HighlightedText text={value} className={className} /> : <span className={className}>{value}</span>;
+  }
   
   return (
     <div className="relative group/edit inline-block w-full">
@@ -393,6 +425,7 @@ const ProjectModal = ({
                   onChange={(v) => onUpdate({ description: v })} 
                   isEditMode={isEditMode} 
                   multiline 
+                  highlight
                   label="Description"
                 />
               </div>
@@ -714,7 +747,7 @@ export default function App() {
               href={data.profile.contact.cvUrl} 
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2 bg-white text-black text-[10px] font-bold uppercase tracking-widest rounded-sm hover:bg-zinc-200 transition-all"
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-[10px] font-bold uppercase tracking-widest rounded-sm hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20"
             >
               <Download size={14} />
               CV
@@ -906,7 +939,7 @@ export default function App() {
                   </div>
                   
                   <p className="text-zinc-500 text-sm mb-6 font-medium leading-relaxed whitespace-pre-wrap">
-                    {project.description}
+                    <HighlightedText text={project.description} />
                   </p>
 
                   <div className="grid grid-cols-3 gap-4 border-t border-zinc-900 pt-6">
@@ -920,7 +953,7 @@ export default function App() {
                     </div>
                     <div>
                       <div className="text-[8px] uppercase text-zinc-600 font-bold mb-1">Localisation</div>
-                      <div className="text-[10px] text-zinc-300 font-bold truncate">{project.location}</div>
+                      <div className="text-[10px] text-zinc-300 font-bold truncate"><HighlightedText text={project.location} /></div>
                     </div>
                   </div>
                 </div>
@@ -1146,25 +1179,34 @@ export default function App() {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-32 sm:py-48 px-4 sm:px-6 text-center border-t border-zinc-900">
-        <h2 className="text-6xl sm:text-8xl md:text-9xl font-bold tracking-tighter mb-12 text-white">DISCUTONS.</h2>
-        <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-8">
-          <a 
-            href={`mailto:${data.profile.contact.email}`} 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className={UI_STYLES.buttonPrimary}
-          >
-            Envoyer un Email
-          </a>
-          <a 
-            href={data.profile.contact.linkedin} 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className={UI_STYLES.buttonSecondary}
-          >
-            LinkedIn
-          </a>
+      <section id="contact" className="py-32 sm:py-48 px-4 sm:px-6 border-t border-zinc-900">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-6xl sm:text-8xl md:text-9xl font-bold tracking-tighter mb-8 text-white">CONTACT.</h2>
+          <p className="text-zinc-400 text-lg sm:text-xl mb-12 max-w-2xl mx-auto">
+            Disponible pour de nouveaux défis en production événementielle et régie générale, en France ou à l'international.
+          </p>
+          <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-8">
+            <a 
+              href={`mailto:${data.profile.contact.email}`} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="px-10 py-5 bg-blue-600 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-blue-700 transition-all rounded-sm shadow-xl shadow-blue-500/20 flex items-center justify-center gap-3"
+            >
+              Envoyer un Email <ArrowRight size={14} />
+            </a>
+            <a 
+              href={data.profile.contact.linkedin} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="px-10 py-5 border border-zinc-800 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-zinc-900 transition-all rounded-sm flex items-center justify-center gap-3"
+            >
+              LinkedIn <ArrowRight size={14} />
+            </a>
+          </div>
+          <div className="mt-16 pt-16 border-t border-zinc-900/50 flex flex-col items-center gap-4">
+            <div className="text-zinc-600 text-[9px] uppercase tracking-[0.3em] font-bold">Coordonnées directes</div>
+            <div className="text-white font-mono text-sm">{data.profile.contact.email}</div>
+          </div>
         </div>
       </section>
 
