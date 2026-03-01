@@ -61,6 +61,7 @@ interface PortfolioData {
       statLabel: string;
     };
     technicalSkills: { label: string }[];
+    mentors: { name: string }[];
     projectsSubtitle: string;
     contact: {
       email: string;
@@ -75,13 +76,14 @@ interface PortfolioData {
 
 const INITIAL_DATA: PortfolioData = {
   profile: {
-    name: "PRODUCTION SHOWCASE",
-    role: "Expert Production Manager",
+    name: "Nils Cattiaux-Truelle",
+    role: "Chargé de Production Événementielle & Régie Générale",
     heroTitle: "PILOTAGE DE PRODUCTION ÉVÉNEMENTIELLE.",
     heroSubtitle: "Expertise technique et rigueur opérationnelle pour projets complexes. Orienté résultats, je transforme les contraintes logistiques en succès d'exécution.",
     bioTitle: "FIABILITÉ & VISION LONG TERME.",
     bioText: [
-      "Expert en production événementielle formé par Ambroise Soulé et Maxime Hernandez. Ma rigueur opérationnelle et ma gestion du risque sont forgées par le terrain et une discipline financière stricte (Bourse/Immobilier). Je transforme la complexité logistique en succès d'exécution."
+      "Ma rigueur professionnelle, forgée sur le terrain de la production événementielle, trouve un écho direct dans ma vie personnelle à travers la gestion active d'investissements boursiers et immobiliers. Cette discipline m'apporte une vision pragmatique et une gestion du risque affûtée pour chaque projet.",
+      "Formé par les meilleurs du secteur, je m'attache à transformer la complexité logistique en succès d'exécution, avec une attention constante portée à la sécurité et à l'optimisation des ressources."
     ],
     professionalEngagement: [
       { label: "Disponibilité", value: "Europe / International" },
@@ -103,10 +105,15 @@ const INITIAL_DATA: PortfolioData = {
       statLabel: "Surface max pilotée"
     },
     technicalSkills: [
-      { label: "AutoCAD" },
-      { label: "Suite Adobe" },
-      { label: "White Card (AU)" },
-      { label: "RSA (AU)" }
+      { label: "AutoCAD (CAO)" },
+      { label: "Gestion des flux (10k m²+)" },
+      { label: "Protocoles OH&S / Sécurité" },
+      { label: "White Card & RSA (Australie)" },
+      { label: "Suite Adobe" }
+    ],
+    mentors: [
+      { name: "Ambroise Soulé" },
+      { name: "Maxime Hernandez" }
     ],
     projectsSubtitle: "Sélection de réalisations // 2023-2026",
     contact: {
@@ -121,7 +128,7 @@ const INITIAL_DATA: PortfolioData = {
       title: 'Planit Installation',
       category: 'Exposition',
       image: 'https://picsum.photos/seed/planit/1200/800',
-      description: "• Montage de structures 10 000m²+\n• Lecture de plans CAO\n• Sécurité OH&S",
+      description: "8 mois à Melbourne au sein de Planit Installation. Rigging technique et logistique de site pour des expositions internationales de grande envergure au Melbourne Convention Center.\n\n• Montage de structures 10 000m²+\n• Lecture de plans CAO complexes\n• Application stricte des protocoles OH&S",
       role: 'Responsable Logistique & Montage',
       kpis: { jauge: '7000+ Visiteurs', budget: 'Optimisé -10%', staff: '25 Techniciens' },
       year: '2025',
@@ -500,13 +507,13 @@ export default function App() {
   };
 
   const filteredProjects = useMemo(() => {
-    if (filter === 'Tous') return data.projects;
-    return data.projects.filter(p => p.category === filter);
+    if (filter === 'Tous') return data.projects || [];
+    return data.projects?.filter(p => p.category === filter) || [];
   }, [filter, data.projects]);
 
   const categories = useMemo(() => {
     const base = ['Tous'];
-    const projectCats = Array.from(new Set(data.projects.map(p => p.category)));
+    const projectCats = Array.from(new Set(data.projects?.map(p => p.category) || []));
     // Sort project categories alphabetically, but keep 'Tous' first
     const sortedCats = projectCats.filter(c => c !== 'Tous').sort();
     return [...base, ...sortedCats];
@@ -574,10 +581,10 @@ export default function App() {
 
   const moveProject = (id: string, direction: 'up' | 'down', e: React.MouseEvent) => {
     e.stopPropagation();
-    const index = data.projects.findIndex(p => p.id === id);
+    const index = data.projects?.findIndex(p => p.id === id) ?? -1;
     if (index === -1) return;
     
-    const newProjects = [...data.projects];
+    const newProjects = [...(data.projects || [])];
     const targetIndex = direction === 'up' ? index - 1 : index + 1;
     
     if (targetIndex >= 0 && targetIndex < newProjects.length) {
@@ -589,7 +596,7 @@ export default function App() {
   const updateProject = (id: string, updates: Partial<Project>) => {
     setData({
       ...data,
-      projects: data.projects.map(p => p.id === id ? { ...p, ...updates } : p)
+      projects: data.projects?.map(p => p.id === id ? { ...p, ...updates } : p) || []
     });
   };
 
@@ -853,7 +860,7 @@ export default function App() {
           </div>
           
           <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2 md:pb-0 w-full md:w-auto">
-            {categories.map(cat => (
+            {categories?.map(cat => (
               <button
                 key={cat}
                 onClick={() => setFilter(cat)}
@@ -863,13 +870,13 @@ export default function App() {
               >
                 {cat}
               </button>
-            ))}
+            )) || null}
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <AnimatePresence mode="popLayout">
-            {filteredProjects.map((project) => (
+            {filteredProjects?.map((project) => (
               <motion.div
                 layout
                 key={project.id}
@@ -905,11 +912,11 @@ export default function App() {
                   <div className="grid grid-cols-3 gap-4 border-t border-zinc-900 pt-6">
                     <div>
                       <div className="text-[8px] uppercase text-zinc-600 font-bold mb-1">Jauge</div>
-                      <div className="text-[10px] text-zinc-300 font-bold">{project.kpis.jauge}</div>
+                      <div className="text-[10px] text-zinc-300 font-bold">{project.kpis?.jauge}</div>
                     </div>
                     <div>
                       <div className="text-[8px] uppercase text-zinc-600 font-bold mb-1">Staff</div>
-                      <div className="text-[10px] text-zinc-300 font-bold">{project.kpis.staff}</div>
+                      <div className="text-[10px] text-zinc-300 font-bold">{project.kpis?.staff}</div>
                     </div>
                     <div>
                       <div className="text-[8px] uppercase text-zinc-600 font-bold mb-1">Localisation</div>
@@ -941,7 +948,7 @@ export default function App() {
                   </div>
                 )}
               </motion.div>
-            ))}
+            )) || null}
           </AnimatePresence>
         </div>
       </section>
@@ -970,16 +977,16 @@ export default function App() {
               />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6">
-              {data.profile.expertise.skills.map((skill, idx) => (
+              {data.profile.expertise.skills?.map((skill, idx) => (
                 <div key={idx} className="flex items-center gap-4 text-white group">
                   <div className="p-2 bg-zinc-900 border border-zinc-800 rounded-sm group-hover:border-zinc-600 transition-colors">
                     <Zap size={16} className="text-zinc-400" />
                   </div>
                   <InlineEdit 
                     value={skill.label} 
-                    originalValue={lastSavedData.profile.expertise.skills[idx]?.label}
+                    originalValue={lastSavedData.profile.expertise.skills?.[idx]?.label}
                     onChange={(v) => {
-                      const newSkills = [...data.profile.expertise.skills];
+                      const newSkills = [...(data.profile.expertise.skills || [])];
                       newSkills[idx].label = v;
                       updateProfile('profile.expertise.skills', newSkills);
                     }} 
@@ -988,21 +995,21 @@ export default function App() {
                     label="Compétence"
                   />
                 </div>
-              ))}
+              )) || null}
             </div>
 
             {/* Technical Skills Sub-section */}
             <div className="mt-16 pt-16 border-t border-zinc-900">
               <div className="text-zinc-500 text-[9px] uppercase tracking-[0.3em] mb-8 font-bold">Compétences Techniques</div>
               <div className="flex flex-wrap gap-4">
-                {data.profile.technicalSkills.map((skill, idx) => (
+                {data.profile.technicalSkills?.map((skill, idx) => (
                   <div key={idx} className="px-5 py-3 bg-zinc-900 border border-zinc-800 rounded-sm flex items-center gap-3 group hover:border-blue-500/50 transition-all">
                     <div className="w-1.5 h-1.5 bg-blue-500 rounded-full group-hover:animate-pulse" />
                     <InlineEdit 
                       value={skill.label} 
-                      originalValue={lastSavedData.profile.technicalSkills[idx]?.label}
+                      originalValue={lastSavedData.profile.technicalSkills?.[idx]?.label}
                       onChange={(v) => {
-                        const newSkills = [...data.profile.technicalSkills];
+                        const newSkills = [...(data.profile.technicalSkills || [])];
                         newSkills[idx].label = v;
                         updateProfile('profile.technicalSkills', newSkills);
                       }} 
@@ -1011,7 +1018,7 @@ export default function App() {
                       label="Skill Technique"
                     />
                   </div>
-                ))}
+                )) || null}
               </div>
             </div>
           </div>
@@ -1057,13 +1064,13 @@ export default function App() {
               />
             </h2>
             <div className="space-y-6 text-zinc-400 text-base sm:text-lg leading-relaxed">
-              {data.profile.bioText.map((text, idx) => (
+              {data.profile.bioText?.map((text, idx) => (
                 <div key={idx}>
                   <InlineEdit 
                     value={text} 
-                    originalValue={lastSavedData.profile.bioText[idx]}
+                    originalValue={lastSavedData.profile.bioText?.[idx]}
                     onChange={(v) => {
-                      const newBio = [...data.profile.bioText];
+                      const newBio = [...(data.profile.bioText || [])];
                       newBio[idx] = v;
                       updateProfile('profile.bioText', newBio);
                     }} 
@@ -1072,20 +1079,45 @@ export default function App() {
                     label={`Paragraphe bio ${idx + 1}`}
                   />
                 </div>
-              ))}
+              )) || null}
+            </div>
+
+            {/* Mentors Section */}
+            <div className="mt-16 pt-16 border-t border-zinc-900">
+              <div className="text-zinc-500 text-[9px] uppercase tracking-[0.3em] mb-8 font-bold">Formé par</div>
+              <div className="flex flex-wrap gap-8">
+                {data.profile.mentors?.map((mentor, idx) => (
+                  <div key={idx} className="group">
+                    <div className="text-zinc-500 text-[8px] uppercase tracking-widest mb-1 font-bold">Mentor // 0{idx + 1}</div>
+                    <div className="text-xl font-bold text-white tracking-tighter uppercase group-hover:text-blue-400 transition-colors">
+                      <InlineEdit 
+                        value={mentor.name} 
+                        originalValue={lastSavedData.profile.mentors?.[idx]?.name}
+                        onChange={(v) => {
+                          const newMentors = [...(data.profile.mentors || [])];
+                          newMentors[idx].name = v;
+                          updateProfile('profile.mentors', newMentors);
+                        }} 
+                        isEditMode={isEditMode} 
+                        label="Nom du mentor"
+                      />
+                    </div>
+                  </div>
+                )) || null}
+              </div>
             </div>
           </div>
           <div className="lg:col-span-5">
             <div className="p-6 sm:p-8 border border-zinc-900 bg-zinc-950 rounded-sm">
               <div className="text-zinc-500 text-[9px] uppercase tracking-widest mb-8 font-bold">Engagement Professionnel</div>
               <ul className="space-y-4">
-                {data.profile.professionalEngagement.map((item, idx) => (
+                {data.profile.professionalEngagement?.map((item, idx) => (
                   <li key={idx} className="flex justify-between items-center py-3 border-b border-zinc-900 last:border-0">
                     <InlineEdit 
                       value={item.label} 
-                      originalValue={lastSavedData.profile.professionalEngagement[idx]?.label}
+                      originalValue={lastSavedData.profile.professionalEngagement?.[idx]?.label}
                       onChange={(v) => {
-                        const newEng = [...data.profile.professionalEngagement];
+                        const newEng = [...(data.profile.professionalEngagement || [])];
                         newEng[idx].label = v;
                         updateProfile('profile.professionalEngagement', newEng);
                       }} 
@@ -1095,9 +1127,9 @@ export default function App() {
                     />
                     <InlineEdit 
                       value={item.value} 
-                      originalValue={lastSavedData.profile.professionalEngagement[idx]?.value}
+                      originalValue={lastSavedData.profile.professionalEngagement?.[idx]?.value}
                       onChange={(v) => {
-                        const newEng = [...data.profile.professionalEngagement];
+                        const newEng = [...(data.profile.professionalEngagement || [])];
                         newEng[idx].value = v;
                         updateProfile('profile.professionalEngagement', newEng);
                       }} 
@@ -1106,7 +1138,7 @@ export default function App() {
                       label="Valeur engagement"
                     />
                   </li>
-                ))}
+                )) || null}
               </ul>
             </div>
           </div>
@@ -1193,9 +1225,9 @@ export default function App() {
                         placeholder="Tapez ou sélectionnez..."
                       />
                       <datalist id="categories-list">
-                        {categories.filter(c => c !== 'Tous').map(cat => (
+                        {categories?.filter(c => c !== 'Tous')?.map(cat => (
                           <option key={cat} value={cat} />
-                        ))}
+                        )) || null}
                       </datalist>
                     </div>
                   </div>
