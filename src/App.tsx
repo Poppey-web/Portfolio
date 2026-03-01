@@ -66,6 +66,7 @@ interface PortfolioData {
     contact: {
       email: string;
       linkedin: string;
+      phone: string;
       cvUrl: string;
     };
   };
@@ -119,6 +120,7 @@ const INITIAL_DATA: PortfolioData = {
     contact: {
       email: "nilscattiauxtruelle@gmail.com",
       linkedin: "https://www.linkedin.com/in/nils-cattiaux-truelle-b37964187/",
+      phone: "+33 6 00 00 00 00",
       cvUrl: "#"
     }
   },
@@ -822,6 +824,14 @@ export default function App() {
                     className={UI_STYLES.inputField}
                   />
                 </div>
+                <div>
+                  <label className={UI_STYLES.label}>Téléphone</label>
+                  <input 
+                    value={data.profile.contact.phone} 
+                    onChange={(e) => updateProfile('profile.contact.phone', e.target.value)}
+                    className={UI_STYLES.inputField}
+                  />
+                </div>
                 <div className="pt-6 border-t border-zinc-900 flex flex-col gap-4">
                   <div className="flex gap-4">
                     <button onClick={exportData} className="flex-1 flex items-center justify-center gap-2 py-3 text-[10px] font-bold uppercase tracking-widest border border-zinc-800 hover:bg-zinc-900 transition-colors">
@@ -842,6 +852,14 @@ export default function App() {
       {/* Hero Section */}
       <section className="min-h-screen flex flex-col justify-center px-4 sm:px-6 max-w-7xl mx-auto pt-20">
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
+          <div className="flex flex-wrap gap-3 mb-8">
+            <div className="px-4 py-1.5 bg-blue-600 text-white text-[9px] font-black uppercase tracking-[0.2em] rounded-full shadow-lg shadow-blue-500/20">
+              Melbourne Expert
+            </div>
+            <div className="px-4 py-1.5 bg-zinc-900 border border-zinc-800 text-white text-[9px] font-black uppercase tracking-[0.2em] rounded-full">
+              AutoCAD (CAO)
+            </div>
+          </div>
           <div className="text-zinc-400 text-[10px] font-mono uppercase tracking-[0.4em] mb-6 font-bold">
             <InlineEdit 
               value={data.profile.role} 
@@ -1203,9 +1221,15 @@ export default function App() {
               LinkedIn <ArrowRight size={14} />
             </a>
           </div>
-          <div className="mt-16 pt-16 border-t border-zinc-900/50 flex flex-col items-center gap-4">
-            <div className="text-zinc-600 text-[9px] uppercase tracking-[0.3em] font-bold">Coordonnées directes</div>
-            <div className="text-white font-mono text-sm">{data.profile.contact.email}</div>
+          <div className="mt-16 pt-16 border-t border-zinc-900/50 flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-16">
+            <div className="flex flex-col items-center gap-2">
+              <div className="text-zinc-600 text-[9px] uppercase tracking-[0.3em] font-bold">Email</div>
+              <div className="text-white font-mono text-sm">{data.profile.contact.email}</div>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <div className="text-zinc-600 text-[9px] uppercase tracking-[0.3em] font-bold">Téléphone</div>
+              <div className="text-white font-mono text-sm">{data.profile.contact.phone}</div>
+            </div>
           </div>
         </div>
       </section>
