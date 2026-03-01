@@ -17,10 +17,25 @@ export default function Login() {
     setLoading(true);
     setError('');
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      navigate('/admin');
+      // Tentative avec Firebase si configuré
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        navigate('/admin');
+        return;
+      } catch (firebaseErr) {
+        console.warn("Firebase login failed or not configured, checking hardcoded credentials.");
+      }
+
+      // Fallback sur les identifiants demandés par l'utilisateur
+      if (email === 'nilscattiauxtruelle@gmail.com' && password === 'Coline33470@') {
+        // Simuler une session réussie
+        localStorage.setItem('nct_admin_session', 'true');
+        navigate('/admin');
+      } else {
+        setError("Identifiants incorrects. Veuillez réessayer.");
+      }
     } catch (err: any) {
-      setError("Identifiants incorrects. Veuillez réessayer.");
+      setError("Une erreur est survenue lors de la connexion.");
       console.error(err);
     } finally {
       setLoading(false);

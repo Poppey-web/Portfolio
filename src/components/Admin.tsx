@@ -26,22 +26,31 @@ export default function Admin() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (u) => {
-      if (u) {
-        setUser(u);
-        // Charger les données depuis localStorage si elles existent
-        const savedData = localStorage.getItem('nct_portfolio_data');
-        if (savedData) setData(JSON.parse(savedData));
-      } else {
-        navigate('/login');
-      }
-      setLoading(false);
-    });
+    const checkAuth = () => {
+      const mockSession = localStorage.getItem('nct_admin_session');
+      
+      const unsubscribe = onAuthStateChanged(auth, (u) => {
+        if (u || mockSession === 'true') {
+          setUser(u || { email: 'nilscattiauxtruelle@gmail.com', displayName: 'Nils' });
+          // Charger les données depuis localStorage si elles existent
+          const savedData = localStorage.getItem('nct_portfolio_data');
+          if (savedData) setData(JSON.parse(savedData));
+          setLoading(false);
+        } else {
+          navigate('/login');
+          setLoading(false);
+        }
+      });
+      return unsubscribe;
+    };
+
+    const unsubscribe = checkAuth();
     return () => unsubscribe();
   }, [navigate]);
 
   const handleLogout = async () => {
     await signOut(auth);
+    localStorage.removeItem('nct_admin_session');
     navigate('/login');
   };
 
