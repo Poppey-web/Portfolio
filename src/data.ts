@@ -95,16 +95,14 @@ export const portfolioData = {
     },
     {
       id: '2',
-      title: 'Night CLub - némésis entertainment ',
+      title: 'Night Club - Némésis Entertainment',
       category: 'Grand Public',
-      image: 'https://cdn.paris.fr/paris/2024/01/25/huge-cb2356925db41a84c634a29e8b31a9ba.jpg',
-      description: 'Régie générale pour des événements musicaux. En plus de la gestion générale de l\'évènement ma mission portait sur la sécurisation du site et l\ optimisation des déplacements du public pour garantir une exploitation fluide et sécurisée.\n\n• Ingénierie des Flux : Conception et mise en œuvre du plan de circulation pour prévenir les points de congestion et fluidifier les accès.\n• Dispositif de Sécurité Civile : Collaboration à l\ élaboration du plan de sécurité et coordination opérationnelle des postes de secours sur site.\n• Gestion de l\ Affluence : Pilotage des équipes d\ accueil et de sécurité pour le contrôle des flux en temps réel lors des pics de fréquentation.\n• Rigueur Opérationnelle : Application des procédures d\ urgence et interface directe avec les services de secours et d\ incendie.",
-
-',
-      role: 'Régisseur Général',
+      image: 'https://www.rollingstone.com/wp-content/uploads/2022/10/Post-Pandemic-and-Beyond-Looking-Ahead-to-the-Future-of-Live-Concerts.jpg',
+      description: "Régie générale pour des événements musicaux. En plus de la gestion générale de l\'évènement ma mission portait sur la sécurisation du site et l\ optimisation des déplacements du public pour garantir une exploitation fluide et sécurisée.\n\n• Ingénierie des Flux : Conception et mise en œuvre du plan de circulation pour prévenir les points de congestion et fluidifier les accès.\n• Dispositif de Sécurité Civile : Collaboration à l\ élaboration du plan de sécurité et coordination opérationnelle des postes de secours sur site.\n• Gestion de l\ Affluence : Pilotage des équipes d\ accueil et de sécurité pour le contrôle des flux en temps réel lors des pics de fréquentation.\n• Rigueur Opérationnelle : Application des procédures d\ urgence et interface directe avec les services de secours et d\ incendie.",
+      role: 'Régisseur général',
       link: '#',
-      kpis: { jauge: '150', budget: '14 000 €', staff: '5' },
-      year: '2024',
+      kpis: { jauge: '150', budget: '12 000 €', staff: '3' },
+      year: '2025',
       location: 'France'
     },
     {
