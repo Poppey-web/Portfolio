@@ -165,4 +165,5 @@ export const portfolioData = {
       year: '2024',
       location: 'France'
     }
+    ]
 };
