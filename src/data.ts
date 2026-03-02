@@ -164,5 +164,5 @@ export const portfolioData = {
       kpis: { jauge: 'x', budget: 'x', staff: 'x' },
       year: '2024',
       location: 'France'
-  ]
+    }
 };
