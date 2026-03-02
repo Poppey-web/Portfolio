@@ -18,13 +18,13 @@ import Admin from './components/Admin';
 
 // --- Components ---
 
-const SafeImage = ({ src, alt, className }: { src: string; alt: string; className?: string }) => {
+const SafeImage = ({ src, alt, className, ui }: { src: string; alt: string; className?: string; ui?: any }) => {
   const [error, setError] = useState(false);
   if (error || !src) {
     return (
       <div className={`bg-zinc-900 flex flex-col items-center justify-center gap-2 text-zinc-700 ${className}`}>
         <ImageIcon size={32} strokeWidth={1} />
-        <span className="text-[8px] uppercase font-bold tracking-widest">Image non disponible</span>
+        <span className="text-[8px] uppercase font-bold tracking-widest">{ui?.common?.imageNotAvailable || "Image non disponible"}</span>
       </div>
     );
   }
@@ -39,9 +39,9 @@ const SafeImage = ({ src, alt, className }: { src: string; alt: string; classNam
   );
 };
 
-const HighlightedText = ({ text, className = "" }: { text?: string; className?: string }) => {
+const HighlightedText = ({ text, terms = [], className = "" }: { text?: string; terms?: string[]; className?: string }) => {
   if (!text) return null;
-  const terms = ["AutoCAD", "OH&S", "Melbourne", "White Card", "RSA"];
+  if (!terms || terms.length === 0) return <span className={className}>{text}</span>;
   const regex = new RegExp(`(${terms.join('|')})`, 'gi');
   const parts = text.split(regex);
   return (
@@ -55,7 +55,7 @@ const HighlightedText = ({ text, className = "" }: { text?: string; className?: 
   );
 };
 
-const ProjectModal = ({ project, onClose }: { project: any; onClose: () => void }) => {
+const ProjectModal = ({ project, onClose, ui, terms }: { project: any; onClose: () => void; ui?: any; terms?: string[] }) => {
   if (!project) return null;
   return (
     <motion.div 
@@ -77,7 +77,7 @@ const ProjectModal = ({ project, onClose }: { project: any; onClose: () => void 
         </button>
         <div className="grid grid-cols-1 md:grid-cols-2">
           <div className="aspect-video md:aspect-auto bg-zinc-900 overflow-hidden relative group">
-            <SafeImage src={project.image} alt={project.title} className="w-full h-full object-cover" />
+            <SafeImage src={project.image} alt={project.title} className="w-full h-full object-cover" ui={ui} />
           </div>
           <div className="p-6 md:p-12 flex flex-col justify-between">
             <div>
@@ -87,23 +87,23 @@ const ProjectModal = ({ project, onClose }: { project: any; onClose: () => void 
                 <span>{project.year}</span>
               </div>
               <h2 className="text-3xl md:text-5xl font-bold tracking-tighter mb-4 leading-none text-white uppercase">{project.title}</h2>
-              <div className="text-zinc-500 text-[10px] uppercase tracking-widest mb-4 font-bold">Rôle: {project.role}</div>
+              <div className="text-zinc-500 text-[10px] uppercase tracking-widest mb-4 font-bold">{ui?.projects?.roleLabel || "Rôle:"} {project.role}</div>
               <div className="text-zinc-300 text-base md:text-lg leading-relaxed mb-8 whitespace-pre-wrap">
-                <HighlightedText text={project.description} />
+                <HighlightedText text={project.description} terms={terms} />
               </div>
               <div className="mt-8 pt-8 border-t border-zinc-800">
-                <div className="text-zinc-400 text-[10px] uppercase tracking-widest mb-6 font-bold">En chiffres</div>
+                <div className="text-zinc-400 text-[10px] uppercase tracking-widest mb-6 font-bold">{ui?.projects?.statsTitle || "En chiffres"}</div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                   <div className="p-4 bg-zinc-950 border border-zinc-900 rounded-sm">
-                    <div className="text-zinc-500 text-[9px] uppercase tracking-widest mb-1">Jauge</div>
+                    <div className="text-zinc-500 text-[9px] uppercase tracking-widest mb-1">{ui?.projects?.jaugeLabel || "Jauge"}</div>
                     <div className="text-lg font-bold text-white">{project.kpis?.jauge}</div>
                   </div>
                   <div className="p-4 bg-zinc-950 border border-zinc-900 rounded-sm">
-                    <div className="text-zinc-500 text-[9px] uppercase tracking-widest mb-1">Budget</div>
+                    <div className="text-zinc-500 text-[9px] uppercase tracking-widest mb-1">{ui?.projects?.budgetLabel || "Budget"}</div>
                     <div className="text-lg font-bold text-white">{project.kpis?.budget}</div>
                   </div>
                   <div className="p-4 bg-zinc-950 border border-zinc-900 rounded-sm">
-                    <div className="text-zinc-500 text-[9px] uppercase tracking-widest mb-1">Staff</div>
+                    <div className="text-zinc-500 text-[9px] uppercase tracking-widest mb-1">{ui?.projects?.staffLabel || "Staff"}</div>
                     <div className="text-lg font-bold text-white">{project.kpis?.staff}</div>
                   </div>
                 </div>
@@ -128,17 +128,26 @@ function Portfolio() {
 
   const profile = portfolioData.profile;
   const projects = portfolioData.projects || [];
+  const ui = profile?.ui;
+  const highlightTerms = profile?.highlightTerms || [];
 
   const filteredProjects = useMemo(() => {
-    if (filter === 'Tous') return projects;
+    if (filter === (ui?.projects?.filterAll || 'Tous')) return projects;
     return projects.filter(p => p.category === filter);
-  }, [filter, projects]);
+  }, [filter, projects, ui]);
 
   const categories = useMemo(() => {
-    const base = ['Tous'];
+    const filterAll = ui?.projects?.filterAll || 'Tous';
+    const base = [filterAll];
     const projectCats = Array.from(new Set(projects.map(p => p.category)));
-    return [...base, ...projectCats.filter(c => c !== 'Tous').sort()];
-  }, [projects]);
+    return [...base, ...projectCats.filter(c => c !== filterAll).sort()];
+  }, [projects, ui]);
+
+  useEffect(() => {
+    if (ui?.projects?.filterAll) {
+      setFilter(ui.projects.filterAll);
+    }
+  }, [ui]);
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-zinc-800 overflow-x-hidden font-sans">
@@ -147,13 +156,13 @@ function Portfolio() {
           <div className="text-lg sm:text-xl font-bold tracking-tighter text-white">{profile?.name}</div>
           <div className="flex items-center gap-4 sm:gap-8">
             <div className="hidden md:flex gap-8 text-[10px] font-bold uppercase tracking-widest text-zinc-400">
-              <a href="#projects" className="hover:text-white transition-colors">Projets</a>
-              <a href="#expertise" className="hover:text-white transition-colors">Expertise</a>
-              <a href="#about" className="hover:text-white transition-colors">Bio</a>
+              <a href="#projects" className="hover:text-white transition-colors">{ui?.nav?.projects || "Projets"}</a>
+              <a href="#expertise" className="hover:text-white transition-colors">{ui?.nav?.expertise || "Expertise"}</a>
+              <a href="#about" className="hover:text-white transition-colors">{ui?.nav?.about || "Bio"}</a>
             </div>
             {profile?.contact?.cvUrl && (
               <a href={profile.contact.cvUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-[10px] font-bold uppercase tracking-widest rounded-sm hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20">
-                <Download size={14} /> CV
+                <Download size={14} /> {ui?.nav?.cv || "CV"}
               </a>
             )}
           </div>
@@ -163,14 +172,17 @@ function Portfolio() {
       <section className="min-h-screen flex flex-col justify-center px-4 sm:px-6 max-w-7xl mx-auto pt-20">
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
           <div className="flex flex-wrap gap-3 mb-8">
-            <div className="px-4 py-1.5 bg-blue-600 text-white text-[9px] font-black uppercase tracking-[0.2em] rounded-full shadow-lg shadow-blue-500/20">Melbourne Expert</div>
-            <div className="px-4 py-1.5 bg-zinc-900 border border-zinc-800 text-white text-[9px] font-black uppercase tracking-[0.2em] rounded-full">AutoCAD (CAO)</div>
+            {profile?.technicalSkills?.slice(0, 2).map((skill: any, idx: number) => (
+              <div key={idx} className={`px-4 py-1.5 text-white text-[9px] font-black uppercase tracking-[0.2em] rounded-full shadow-lg ${idx === 0 ? 'bg-blue-600 shadow-blue-500/20' : 'bg-zinc-900 border border-zinc-800'}`}>
+                {skill.label}
+              </div>
+            ))}
           </div>
           <div className="text-zinc-400 text-[10px] font-mono uppercase tracking-[0.4em] mb-6 font-bold">{profile?.role}</div>
           <h1 className="text-5xl sm:text-7xl md:text-9xl font-bold tracking-tighter leading-[0.85] mb-8 text-white uppercase">{profile?.heroTitle}</h1>
           <div className="text-lg sm:text-xl md:text-2xl text-zinc-400 max-w-2xl leading-relaxed mb-12">{profile?.heroSubtitle}</div>
           <a href="#projects" className="inline-flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest border-b border-white pb-2 hover:text-zinc-400 hover:border-zinc-400 transition-all text-white">
-            Voir les projets <ArrowRight size={14} />
+            {ui?.hero?.cta || "Voir les projets"} <ArrowRight size={14} />
           </a>
         </motion.div>
       </section>
@@ -178,7 +190,7 @@ function Portfolio() {
       <section id="projects" className="py-20 sm:py-32 px-4 sm:px-6 max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-8">
           <div>
-            <h2 className="text-4xl sm:text-6xl font-bold tracking-tighter mb-4 text-white uppercase">PROJETS</h2>
+            <h2 className="text-4xl sm:text-6xl font-bold tracking-tighter mb-4 text-white uppercase">{profile?.projectsTitle || 'PROJETS'}</h2>
             <div className="text-zinc-400 text-[10px] font-mono uppercase tracking-widest font-bold">{profile?.projectsSubtitle}</div>
           </div>
           <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2 md:pb-0 w-full md:w-auto">
@@ -194,15 +206,26 @@ function Portfolio() {
             {filteredProjects?.map((project) => (
               <motion.div layout key={project.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }} className="group relative bg-zinc-950 border border-zinc-900 overflow-hidden cursor-pointer rounded-sm hover:border-zinc-700 transition-all duration-500" onClick={() => setSelectedProject(project)}>
                 <div className="aspect-[16/9] overflow-hidden relative">
-                  <SafeImage src={project.image} alt={project.title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" />
+                  <SafeImage src={project.image} alt={project.title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" ui={ui} />
                 </div>
-                <div className="p-8">
-                  <div className="flex justify-between items-start mb-4">
-                    <h3 className="text-2xl font-bold tracking-tighter text-white uppercase group-hover:text-blue-400 transition-colors">{project.title}</h3>
-                    <span className="text-[10px] font-mono text-zinc-600">{project.year}</span>
+                  <div className="p-8">
+                    <div className="flex justify-between items-start mb-4">
+                      <h3 className="text-2xl font-bold tracking-tighter text-white uppercase group-hover:text-blue-400 transition-colors">{project.title}</h3>
+                      <span className="text-[10px] font-mono text-zinc-600">{project.year}</span>
+                    </div>
+                    <p className="text-zinc-500 text-sm mb-6 font-medium leading-relaxed whitespace-pre-wrap line-clamp-3"><HighlightedText text={project.description} terms={highlightTerms} /></p>
+                    {project.link && project.link !== '#' && (
+                      <a 
+                        href={project.link} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="inline-flex items-center gap-2 text-[8px] font-bold uppercase tracking-widest text-blue-500 hover:text-blue-400 transition-colors"
+                      >
+                        {ui?.projects?.viewProject || "Voir le projet"} <ArrowRight size={10} />
+                      </a>
+                    )}
                   </div>
-                  <p className="text-zinc-500 text-sm mb-6 font-medium leading-relaxed whitespace-pre-wrap"><HighlightedText text={project.description} /></p>
-                </div>
               </motion.div>
             ))}
           </AnimatePresence>
@@ -236,11 +259,11 @@ function Portfolio() {
               {profile?.bioText?.map((text, idx) => <p key={idx}>{text}</p>)}
             </div>
             <div className="mt-16 pt-16 border-t border-zinc-900">
-              <div className="text-zinc-500 text-[9px] uppercase tracking-[0.3em] mb-8 font-bold">Formé par</div>
+              <div className="text-zinc-500 text-[9px] uppercase tracking-[0.3em] mb-8 font-bold">{ui?.about?.mentorsTitle || "Formé par"}</div>
               <div className="flex flex-wrap gap-8">
                 {profile?.mentors?.map((mentor, idx) => (
                   <div key={idx} className="group">
-                    <div className="text-zinc-500 text-[8px] uppercase tracking-widest mb-1 font-bold">Mentor // 0{idx + 1}</div>
+                    <div className="text-zinc-500 text-[8px] uppercase tracking-widest mb-1 font-bold">{ui?.about?.mentorPrefix || "Mentor // 0"}{idx + 1}</div>
                     <div className="text-xl font-bold text-white tracking-tighter uppercase group-hover:text-blue-400 transition-colors">{mentor.name}</div>
                   </div>
                 ))}
@@ -256,20 +279,20 @@ function Portfolio() {
             <div>
               <h2 className="text-4xl sm:text-6xl font-bold tracking-tighter mb-8 text-white uppercase">{profile?.contact?.title}</h2>
               <div className="flex flex-wrap gap-6">
-                {profile?.contact?.email && <a href={`mailto:${profile.contact.email}`} className="flex items-center gap-3 text-zinc-400 hover:text-white transition-colors group"><div className="p-3 bg-zinc-900 border border-zinc-800 rounded-full group-hover:border-blue-500 transition-colors"><Mail size={18} /></div><div className="flex flex-col"><span className="text-[8px] uppercase font-bold tracking-widest text-zinc-600">Email</span><span className="text-sm font-mono">{profile.contact.email}</span></div></a>}
-                {profile?.contact?.linkedin && <a href={profile.contact.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-zinc-400 hover:text-white transition-colors group"><div className="p-3 bg-zinc-900 border border-zinc-800 rounded-full group-hover:border-blue-500 transition-colors"><Linkedin size={18} /></div><div className="flex flex-col"><span className="text-[8px] uppercase font-bold tracking-widest text-zinc-600">LinkedIn</span><span className="text-sm font-mono">Nils Cattiaux-Truelle</span></div></a>}
+                {profile?.contact?.email && <a href={`mailto:${profile.contact.email}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-zinc-400 hover:text-white transition-colors group"><div className="p-3 bg-zinc-900 border border-zinc-800 rounded-full group-hover:border-blue-500 transition-colors"><Mail size={18} /></div><div className="flex flex-col"><span className="text-[8px] uppercase font-bold tracking-widest text-zinc-600">{ui?.footer?.emailLabel || "Email"}</span><span className="text-sm font-mono">{profile.contact.email}</span></div></a>}
+                {profile?.contact?.linkedin && <a href={profile.contact.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-zinc-400 hover:text-white transition-colors group"><div className="p-3 bg-zinc-900 border border-zinc-800 rounded-full group-hover:border-blue-500 transition-colors"><Linkedin size={18} /></div><div className="flex flex-col"><span className="text-[8px] uppercase font-bold tracking-widest text-zinc-600">{ui?.footer?.linkedinLabel || "LinkedIn"}</span><span className="text-sm font-mono">{profile.name}</span></div></a>}
               </div>
             </div>
             <div className="text-right">
               <div className="text-[9px] font-mono uppercase tracking-[0.5em] font-bold text-zinc-700 mb-4 group relative inline-block">
-                © 2026 {profile?.name}
-                <Link to="/login" className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 flex items-center justify-center text-[8px] text-white">Admin</Link>
+                {ui?.footer?.copyrightPrefix || "© 2026"} {profile?.name}
+                <Link to="/login" className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 flex items-center justify-center text-[8px] text-white">{ui?.footer?.adminLabel || "Admin"}</Link>
               </div>
             </div>
           </div>
         </div>
       </footer>
-      <AnimatePresence>{selectedProject && <ProjectModal project={selectedProject} onClose={() => setSelectedProject(null)} />}</AnimatePresence>
+      <AnimatePresence>{selectedProject && <ProjectModal project={selectedProject} onClose={() => setSelectedProject(null)} ui={ui} terms={highlightTerms} />}</AnimatePresence>
     </div>
   );
 }
