@@ -35,7 +35,22 @@ export default function Admin() {
           setUser(u || { email: 'nilscattiauxtruelle@gmail.com', displayName: 'Nils' });
           // Charger les données depuis localStorage si elles existent
           const savedData = localStorage.getItem('nct_portfolio_data');
-          if (savedData) setData(JSON.parse(savedData));
+          if (savedData) {
+            const parsed = JSON.parse(savedData);
+            // Fusionner avec initialData pour s'assurer que les nouvelles propriétés (comme ui) existent
+            setData({
+              ...initialData,
+              ...parsed,
+              profile: {
+                ...initialData.profile,
+                ...(parsed.profile || {}),
+                ui: {
+                  ...initialData.profile.ui,
+                  ...(parsed.profile?.ui || {})
+                }
+              }
+            });
+          }
           setLoading(false);
         } else {
           navigate('/login');

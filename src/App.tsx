@@ -123,7 +123,21 @@ function Portfolio() {
 
   useEffect(() => {
     const savedData = localStorage.getItem('nct_portfolio_data');
-    if (savedData) setPortfolioData(JSON.parse(savedData));
+    if (savedData) {
+      const parsed = JSON.parse(savedData);
+      setPortfolioData({
+        ...initialData,
+        ...parsed,
+        profile: {
+          ...initialData.profile,
+          ...(parsed.profile || {}),
+          ui: {
+            ...initialData.profile.ui,
+            ...(parsed.profile?.ui || {})
+          }
+        }
+      });
+    }
   }, []);
 
   const profile = portfolioData.profile;
