@@ -2,7 +2,7 @@ export const portfolioData = {
   profile: {
     name: "Nils Cattiaux-Truelle",
     role: "ASSISTANCE À LA COORDINATION OPÉRATIONNELLE.",
-    heroTitle: "Chargé de Production Événementielle & Régisseur Junior",
+    heroTitle: "Portfolio 2026",
     heroSubtitle: "Expertise en coordination logistique et sécurité des flux. De l'implantation technique en Australie (10 000 m²) à l'exigence du luxe à Paris, je sécurise chaque étape de vos projets complexes.",
     bioTitle: "FIABILITÉ & VISION LONG TERME.",
     bioText: [
